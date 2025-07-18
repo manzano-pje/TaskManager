@@ -11,6 +11,10 @@ contract TaskMananger{
     event TaskCreated(uint256 id, string title, adress creator, uint256 stakeAmount, uint256 deadline);
     event TaskCompleted(uint256 id, uint256 stakeReturned);
     event StakeLost(uint256 id, uint256 stakeAmount);
+    event TaskStatusUpdated(uint256  Id, address creator, bool newStatus, uint256 updatedAt);                           // Gráfico Distribuição de tarefas
+    event TaskStakeUpdated(uint256 Id, address creator, uint256 stakeAmount, bool stakeReturned, uint256 updatedAt);    // Gráfico Distribuição de valores
+    event TaskCreatedWithStake(uint256 Id, address creator, uint256 stakeAmount, uint256 createdAt);                    // Gráfico Comparação de Valores (valor creditado)
+    event TaskStakeReturned(uint256 Id, address creator, uint256 returnedAmount, uint256 returnedAt);                   // Gráfico Comparação de Valores (valor recebido)
 
     // ========================================
     // STRUCT
@@ -27,7 +31,6 @@ contract TaskMananger{
         bool stakeReturned;     // Se já devolveu o dinheiro
     }
 
-
     // ========================================
     // VARIÁVEIS DE ESTADO
     // ========================================
@@ -35,45 +38,49 @@ contract TaskMananger{
     mapping(address => uint256[]) public userTasks;     // Tarefas de cada usuário
     uint256 public taskCount = 0;                       // Contador de tarefas
     uint256 public constant MINIMUM_STAKE = 0.001 ether;// Valor mínimo
+    uint256 public completedCount = 0;                  // Contador de tasks completadas
+    uint256 public pendingCount = 0;                    // Contadoe de Tasks pendentes
 
     // ========================================
     // FUNÇÕES
     // ========================================
     
     function createTask(
-        string memory _title;       // variável temporária em memória _title
-        string memory _description; // variável temporária em memória _description
-        uint256 _deadline
-    ) public payable{ 
-        // require(msg.value >= MINIMUM_STAKE, "Valor mínimo é 0,001 ether");
-        // require pode ser escrito como if (recomendado)
+        string memory _title,       // variável temporária em memória _title
+        string memory _description, // variável temporária em memória _description
+        uint256 _deadline           // variável indicando tempo final
+    )   public payable{ 
+            // require(msg.value >= MINIMUM_STAKE, "Valor mínimo é 0,001 ether");
+            // require pode ser escrito como if (recomendado)
 
-        if(msg.value < 0.0000001 ehter){
-            revert("Valor mínimo é 0.00000001 ether);
+            if(msg.value < MINIMUM_STAKE){
+                revert("Valor minimo e 0.00000001 ether");
+            }
+            require(_deadline > block.timestamp, "Prazo deve ser maior que agora");
+
+            taskCount ++;
+            tasks[taskCount] = Task({
+                id: taskCount,
+                title: _title,
+                description: _description,
+                createdAt: block.timestamp,
+                deadline: _deadline,
+                status: false,
+                creator: msg.value,
+                stakeAmount:msg.value,
+                stakeReturned: false
+            });
+            pendingCount ++;
+            userTasks[msg.sender].push(taskCount);
+            emit TaskCreated(taskCount, _title, msg.sender, msg.value, _deadline);
         }
-        require(_deadline > block.timestamp, "Prazo deve ser maior que agora");
-
-        taskCount ++;
-        tasks[taskCount] = Task({
-            id: taskCount,
-            title: _title,
-            description: _description,
-            createdAt: block.timestamp,
-            deadline: _deadline,
-            status: false,
-            creator: msg.value,
-            stakeReturned> false
-        });
-
-        userTasks[msg.sender].push(taskCount);
-        emit TaskCreated(taskCount, _title, msg.sender, msg.value, _deadline);
     }
 
-    functoin complpeteTask(uint256 _id) public{
+    function complpeteTask(uint256 _id) public{
         Task storage task = tasks[_id];
         require(task.creator == msg.sender, "Apenas o Criador pode completar");
-        requite(!task.status, "Tarefa já concluida);
-        require(!task.stakeReturned, "Stake já foi processda);
+        requite(!task.status, "Tarefa ja concluida");
+        require(!task.stakeReturned, "Stake ja foi processda");
 
         task.status = true;
         task.stakeReturned = true;
@@ -84,6 +91,8 @@ contract TaskMananger{
             // DENTRO DO PRAZO - Devolver task
             (bool success, ) = payable(task.creator).call(value:task.stakeAmount)("");
             require(success, "Falha ao devolver stake");
+            completedCount ++;
+            pendingCount --;
             emit TaskCompleted(_id, task.stakeAmount);
         } else{
 
@@ -108,6 +117,13 @@ contract TaskMananger{
     function getContractBalance() public view returns (uint256){
         return address(this).balance;
     }
+
+    function getTaskStatusCount() public view returns(uint256 completed, uint256 pending){
+        return (completedCount, pendingCount);
+    }
+
+    
+    
 
     // Função auxiliar para vertificar se tarefa está atrasada
     function isTaskOverdure(uint256 _id) public view returns (bool){
