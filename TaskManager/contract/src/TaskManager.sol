@@ -12,6 +12,16 @@ contract TaskMananger{
     event TaskCompleted(uint256 id, uint256 stakeReturned);
     event StakeLost(uint256 id, uint256 stakeAmount);
 
+    // Gráfico Distribuição de tarefas
+    event TaskStatusUpdated(uint256  Id, address creator, bool newStatus, uint256 updatedAt);
+
+    // Gráfico Distribuição de valores
+    event TaskStakeUpdated(uint256 Id, address creator, uint256 stakeAmount, bool stakeReturned, uint256 updatedAt);
+
+    // Gráfico Comparação de Valores
+    event TaskCreatedWithStake(uint256 Id, address creator, uint256 stakeAmount, uint256 createdAt);
+    event TaskStakeReturned(uint256 Id, address creator, uint256 returnedAmount, uint256 returnedAt);
+
     // ========================================
     // STRUCT
     // ========================================
