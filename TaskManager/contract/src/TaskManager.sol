@@ -11,10 +11,8 @@ contract TaskMananger{
     event TaskCreated(uint256 id, string title, adress creator, uint256 stakeAmount, uint256 deadline);
     event TaskCompleted(uint256 id, uint256 stakeReturned);
     event StakeLost(uint256 id, uint256 stakeAmount);
-    event TaskStatusUpdated(uint256  Id, address creator, bool newStatus, uint256 updatedAt);                           // Gráfico Distribuição de tarefas
-    event TaskStakeUpdated(uint256 Id, address creator, uint256 stakeAmount, bool stakeReturned, uint256 updatedAt);    // Gráfico Distribuição de valores
-    event TaskCreatedWithStake(uint256 Id, address creator, uint256 stakeAmount, uint256 createdAt);                    // Gráfico Comparação de Valores (valor creditado)
-    event TaskStakeReturned(uint256 Id, address creator, uint256 returnedAmount, uint256 returnedAt);                   // Gráfico Comparação de Valores (valor recebido)
+    event TaskStatusUpdated(uint256 completedCount, uint256 pendingCount);  // Gráfico Distribuição de tarefas
+    event TaskStakeUpdated(uint256 returnedAmount, uint256 pendingAmount);  // Gráfico Distribuição de valores                
 
     // ========================================
     // STRUCT
@@ -40,6 +38,9 @@ contract TaskMananger{
     uint256 public constant MINIMUM_STAKE = 0.001 ether;// Valor mínimo
     uint256 public completedCount = 0;                  // Contador de tasks completadas
     uint256 public pendingCount = 0;                    // Contadoe de Tasks pendentes
+    uint256 public pendingAmount = 0;                   // Valor total pendente
+    uint256 public returnedAmount = 0;                  // Valor total devolvido
+
 
     // ========================================
     // FUNÇÕES
@@ -71,6 +72,7 @@ contract TaskMananger{
                 stakeReturned: false
             });
             pendingCount ++;
+            pendingAmount = pendingAmount + stakeAmount;
             userTasks[msg.sender].push(taskCount);
             emit TaskCreated(taskCount, _title, msg.sender, msg.value, _deadline);
         }
@@ -93,6 +95,8 @@ contract TaskMananger{
             require(success, "Falha ao devolver stake");
             completedCount ++;
             pendingCount --;
+            returnedAmount = returnedAmount + task.stakeAmount;
+            pendingAmount = pendingAmount - task.stakeAmount;
             emit TaskCompleted(_id, task.stakeAmount);
         } else{
 
@@ -122,8 +126,8 @@ contract TaskMananger{
         return (completedCount, pendingCount);
     }
 
-    
-    
+    function getTaskRetunnedAmount() public view returns(uint256 returnedAmount, uint256 pendingAmount)
+        return (returnedAmount, pendingAmount);
 
     // Função auxiliar para vertificar se tarefa está atrasada
     function isTaskOverdure(uint256 _id) public view returns (bool){
