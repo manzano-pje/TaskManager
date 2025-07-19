@@ -146,55 +146,7 @@ const ValuesChart: React.FC<ValuesChartProps> = ({ tasks }) => {
         </div>
       </div>
 
-      {/* Gráfico de Barras - Comparação de Valores */}
-      <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-6 border border-slate-700">
-        <div className="flex items-center space-x-3 mb-6">
-          <div className="p-2 bg-gradient-to-r from-cyan-600 to-blue-600 rounded-lg">
-            <TrendingUp className="h-6 w-6 text-white" />
-          </div>
-          <h3 className="text-xl font-bold text-white">Comparação de Valores</h3>
-        </div>
-        
-        <div className="h-64">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={barData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-              <XAxis 
-                dataKey="name" 
-                stroke="#9ca3af"
-                fontSize={12}
-              />
-              <YAxis 
-                stroke="#9ca3af"
-                fontSize={12}
-                tickFormatter={(value) => {
-                  if (value >= 1e18) return `${(value / 1e18).toFixed(1)}E`;
-                  if (value >= 1e15) return `${(value / 1e15).toFixed(1)}P`;
-                  if (value >= 1e12) return `${(value / 1e12).toFixed(1)}T`;
-                  if (value >= 1e9) return `${(value / 1e9).toFixed(1)}G`;
-                  if (value >= 1e6) return `${(value / 1e6).toFixed(1)}M`;
-                  if (value >= 1e3) return `${(value / 1e3).toFixed(1)}K`;
-                  return value.toString();
-                }}
-              />
-              <Tooltip content={<CustomBarTooltip />} />
-              <Bar dataKey="recebido" fill="#10b981" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="pendente" fill="#f59e0b" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-        
-        <div className="mt-4 flex justify-center space-x-6">
-          <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-            <span className="text-slate-300 text-sm">Recebido</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-            <span className="text-slate-300 text-sm">Pendente</span>
-          </div>
-        </div>
-      </div>
+
     </div>
   );
 };
