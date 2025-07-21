@@ -159,9 +159,7 @@ function App() {
                 completedTasks={completedTasks}
                 pendingTasks={pendingTasks}
               />
-              <div className="lg:col-span-1">
-                <ValuesChart tasks={tasks} />
-              </div>
+              <ValuesChart tasks={tasks} />
             </div>
           </section>
         )}
