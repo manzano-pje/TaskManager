@@ -145,10 +145,7 @@ const ValuesChart: React.FC<ValuesChartProps> = ({ tasks }) => {
           </p>
         </div>
       </div>
-
-
     </div>
   );
 };
-
 export default ValuesChart;
