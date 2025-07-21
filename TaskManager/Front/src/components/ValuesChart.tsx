@@ -107,7 +107,7 @@ const ValuesChart: React.FC<ValuesChartProps> = ({ tasks }) => {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
       {/* Gráfico de Pizza - Distribuição de Valores */}
       <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-6 border border-slate-700">
         <div className="flex items-center space-x-3 mb-6">
