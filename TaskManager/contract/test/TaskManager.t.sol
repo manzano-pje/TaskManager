@@ -6,13 +6,13 @@ import {TaskManager} from "../src/TaskManager.sol";
 
 contract TaskManagerTest is Test{
     TaskManager public taskManager;
-    adress public user1 = makeAddr("user1");
-    adress public user2 = makeAddr("user2");
+    address public user1 = makeAddr("user1");
+    address public user2 = makeAddr("user2");
 
     event TaskCreated(
         uint256 id, 
         string title, 
-        adrress creator, 
+        address creator, 
         uint256 stakeAmount, 
         uint256 deadline
     );
@@ -32,7 +32,7 @@ contract TaskManagerTest is Test{
         uint deadline = block.timestamp + 1000;
 
         vm.prank(user1);
-        taskManager.createTask{value: StakeAmount}
+        taskManager.createTask{value: stakeAmount}
         ("Estudar Solidity", "Completar tutorial", deadline);
         
         assertEq(taskManager.getTaskCount(), 1);
@@ -40,8 +40,8 @@ contract TaskManagerTest is Test{
         TaskManager.Task memory task = taskManager.getTask(1);
         assertEq(task.stakeAmount, stakeAmount);
         assertEq(task.deadline, deadline);
-        assertEq(task.Status, false);
-        assertEq(task.Creator, user1);
+        assertEq(task.status, false);
+        assertEq(task.creator, user1);
     }
 
     // TESTE 2 - Completar Tarefa
@@ -49,11 +49,11 @@ contract TaskManagerTest is Test{
     function test_CompleteTask() public {
         uint256 stakeAmount = 0.001 ether;
         uint256 deadline = block.timestamp + 1000;
-        uint unitialBalance = user1.balance;
+        uint initialBalance = user1.balance;
 
         // Criar tarefa
         vm.prank(user1);
-        taskManager.createTask{value: StakeAmount}
+        taskManager.createTask{value: stakeAmount}
         ("Estudar Solidity", "Completar tutorial", deadline);
 
         // Comppletar tarefa
@@ -86,16 +86,12 @@ contract TaskManagerTest is Test{
         // Verificar tareafas do usuário
         uint256[] memory userTasks = taskManager.getUserTasks(user1);
 
-        assertEq(userTasks.lenght, 3);
+        assertEq(userTasks.length, 3);
         assertEq(userTasks[0], 1);
         assertEq(userTasks[1], 2);
         assertEq(userTasks[2], 3);
 
         //Verificar que total de tarefas é 3
         assertEq(taskManager.getTaskCount(), 3);
-
-
     }
-
-
 }
