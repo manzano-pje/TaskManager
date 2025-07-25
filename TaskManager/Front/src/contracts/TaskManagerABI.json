@@ -1,7 +1,4 @@
-// TaskManagerABI.json
-export const contractAddress = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"; // coloque aqui o endereço real do contrato
-
-export const contractABI = [
+[
     {
       "type": "function",
       "name": "MINIMUM_STAKE",
