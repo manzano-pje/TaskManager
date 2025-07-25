@@ -3,12 +3,12 @@
 pragma solidity ^0.8.13; // a partir de versão 
 
 // início contrato
-contract TaskMananger{
+contract TaskManager{
 
     // ========================================
     // EVENTS
     // ========================================
-    event TaskCreated(uint256 id, string title, adress creator, uint256 stakeAmount, uint256 deadline);
+    event TaskCreated(uint256 id, string title, address creator, uint256 stakeAmount, uint256 deadline);
     event TaskCompleted(uint256 id, uint256 stakeReturned);
     event StakeLost(uint256 id, uint256 stakeAmount);
     event TaskStatusUpdated(uint256 completedCount, uint256 pendingCount);  // Gráfico Distribuição de tarefas
@@ -67,21 +67,21 @@ contract TaskMananger{
                 createdAt: block.timestamp,
                 deadline: _deadline,
                 status: false,
-                creator: msg.value,
+                creator: msg.sender,
                 stakeAmount:msg.value,
                 stakeReturned: false
             });
             pendingCount ++;
-            pendingAmount = pendingAmount + stakeAmount;
+            pendingAmount = pendingAmount + msg.value;
             userTasks[msg.sender].push(taskCount);
             emit TaskCreated(taskCount, _title, msg.sender, msg.value, _deadline);
         }
-    }
+    
 
-    function complpeteTask(uint256 _id) public{
+    function completeTask(uint256 _id) public{
         Task storage task = tasks[_id];
         require(task.creator == msg.sender, "Apenas o Criador pode completar");
-        requite(!task.status, "Tarefa ja concluida");
+        require(!task.status, "Tarefa ja concluida");
         require(!task.stakeReturned, "Stake ja foi processda");
 
         task.status = true;
@@ -91,7 +91,7 @@ contract TaskMananger{
         if(block.timestamp <= task.deadline){
 
             // DENTRO DO PRAZO - Devolver task
-            (bool success, ) = payable(task.creator).call(value:task.stakeAmount)("");
+            (bool success, ) = payable(task.creator).call{value:task.stakeAmount}("");
             require(success, "Falha ao devolver stake");
             completedCount ++;
             pendingCount --;
@@ -101,17 +101,17 @@ contract TaskMananger{
         } else{
 
             // ATRASADO - Perder stake
-            emit taskCompleted(_id,0);
+            emit TaskCompleted(_id,0);
             emit StakeLost(_id, task.stakeAmount);
         }
     }
 
-    function getUserTasks(adress _user) public view returns(uint256[] memory){
-        return userTasks(_user);
+    function getUserTasks(address _user) public view returns(uint256[] memory){
+        return userTasks[_user];
     }
 
-    functoin getTask(uint256 _id) public view returns(Task memory){
-        return Task[_id];
+    function getTask(uint256 _id) public view returns(Task memory){
+        return tasks[_id];
     }
 
     function getTaskCount() public view returns (uint256){
@@ -126,11 +126,12 @@ contract TaskMananger{
         return (completedCount, pendingCount);
     }
 
-    function getTaskRetunnedAmount() public view returns(uint256 returnedAmount, uint256 pendingAmount)
+    function getTaskRetunnedAmount() public view returns(uint256 returnedAmount, uint256 pendingAmount){
         return (returnedAmount, pendingAmount);
+    }
 
     // Função auxiliar para vertificar se tarefa está atrasada
-    function isTaskOverdure(uint256 _id) public view returns (bool){
+    function isTaskOverdue(uint256 _id) public view returns (bool){
         Task memory task = tasks[_id];
         return !task.status && block.timestamp > task.deadline;
     }

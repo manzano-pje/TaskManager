@@ -5,6 +5,12 @@ import TaskCard from './components/TaskCard';
 import TaskModal from './components/TaskModal';
 import TasksChart from './components/TasksChart';
 import ValuesChart from './components/ValuesChart';
+import { ethers } from 'ethers';
+import contractAbi from './scripts/TaskManagerABI.js'; // Ajuste o caminho conforme seu projeto
+
+const contractAddress = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'; // Endereço do seu contrato após o deploy
+
+
 import { 
   CheckSquare, 
   Clock, 
@@ -29,6 +35,10 @@ function App() {
   const [walletAddress, setWalletAddress] = useState<string>('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tasks, setTasks] = useState<Task[]>([]);
+
+  const [provider, setProvider] = useState<ethers.providers.Web3Provider | null>(null);
+  const [signer, setSigner] = useState<ethers.Signer | null>(null);
+  const [contract, setContract] = useState<ethers.Contract | null>(null);
 
   // Dados de exemplo que são carregados quando a carteira é conectada
   const loadWalletTasks = () => {
