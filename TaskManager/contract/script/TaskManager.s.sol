@@ -12,7 +12,7 @@ contract TaskManagerScript is Script{
     function run() public{
         vm.startBroadcast();
         taskManager = new TaskManager();
-        console.log("TaskManager deployed to: ", adress(taskManager));
+        console.log("TaskManager deployed to: ", address(taskManager));
         vm.stopBroadcast();
     }
 }
