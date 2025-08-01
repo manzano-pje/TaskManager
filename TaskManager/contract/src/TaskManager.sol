@@ -30,7 +30,7 @@ contract TaskManager{
     }
 
     // ========================================
-    // VARIÁVEIS DE ESTADO
+    // STATE VARIABLES
     // ========================================
     mapping(uint256 => Task) public tasks;              // Lista de todas as tarefas
     mapping(address => uint256[]) public userTasks;     // Tarefas de cada usuário
@@ -43,7 +43,7 @@ contract TaskManager{
 
 
     // ========================================
-    // FUNÇÕES
+    // FUNCTIONS
     // ========================================
     
     function createTask(
@@ -68,6 +68,7 @@ contract TaskManager{
                 deadline: _deadline,
                 status: false,
                 creator: msg.sender,
+
                 stakeAmount:msg.value,
                 stakeReturned: false
             });
@@ -77,7 +78,6 @@ contract TaskManager{
             emit TaskCreated(taskCount, _title, msg.sender, msg.value, _deadline);
         }
     
-
     function completeTask(uint256 _id) public{
         Task storage task = tasks[_id];
         require(task.creator == msg.sender, "Apenas o Criador pode completar");
@@ -108,20 +108,11 @@ contract TaskManager{
 
     function getUserTasks(address _user) public view returns(uint256[] memory){
         return userTasks[_user];
+
     }
 
     function getTask(uint256 _id) public view returns(Task memory){
         return tasks[_id];
-    }
-
-    // 🚀 NOVA FUNÇÃO: Retorna todas as tarefas do usuário com dados completos
-    function getUserTaskWithData(address _user) public view returns(Task[] memory){
-        uint256[] memory taskIds = userTasks[_user];
-        Task[] memory userTasksData = new Task[](taskIds.length);
-        for (uint256 i = 0; i<taskIds.length; i++){
-            userTasksData[i] = tasks[taskIds[i]];
-        }
-        return userTasksData;
     }
 
     function getTaskCount() public view returns (uint256){
@@ -136,7 +127,9 @@ contract TaskManager{
         return (completedCount, pendingCount);
     }
 
+
     function getTaskRetunnedAmount() public view returns(uint256 returnedAmount, uint256 pendingAmount){
+
         return (returnedAmount, pendingAmount);
     }
 
