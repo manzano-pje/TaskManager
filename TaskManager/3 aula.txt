@@ -1,8 +1,0 @@
-bibliotecas 
-wagmi e viem para fazer conexão
-tanstack/reacty-query
-
-pnpm add wagmi viem @tanstack/reacty-query @wagmi/connectors
-
-
-pegar o ABI e o endereço do contrato
