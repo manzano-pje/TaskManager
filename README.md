@@ -86,5 +86,5 @@ Após a implantação, você terá o endereço do contrato para interagir com el
 -----
 
 ## Contato
-   * [Foundry](https://getfoundry.sh/) instalado.
-  * **LinkedIn:** [paulo-manzano]([www.linkedin.com/in/paulo-manzano])
+  
+  * **LinkedIn:** [paulo-manzano](https://www.linkedin.com/in/paulo-manzano)
